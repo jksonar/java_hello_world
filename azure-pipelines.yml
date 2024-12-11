@@ -26,8 +26,8 @@ stages:
           - script: |
               echo "Deploying to Dev"
               /opt/apache-maven-3.9.6/bin/mvn clean package
-              cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryDev)
               sudo kill -15 $(ps -ef |grep nohup|grep 7070|awk '{print $2}')
+              cp -f $(Pipeline.Workspace)/s/target/$(jarFileName) $(appDirectoryDev)
               sudo nohup java -jar $(appDirectoryDev)$(jarFileName) --server.port=7070 > $(appDirectoryDev)dev.log 2>&1 &
             displayName: "Deploy to Dev"
 
@@ -39,8 +39,9 @@ stages:
           - script: |
               echo "Deploying to UAT"
               /opt/apache-maven-3.9.6/bin/mvn clean package
-              cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryUat)
-              nohup java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090 &
+              sudo kill -15 $(ps -ef |grep nohup|grep 7070|awk '{print $2}')
+              cp -f $(Pipeline.Workspace)/s/target/$(jarFileName) $(appDirectoryUat)
+              nohup java -jar $(appDirectoryUat)$(jarFileName) --server.port=9090 > $(appDirectoryDev)uat.log 2>&1 &
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
@@ -50,8 +51,8 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Prod"
-              sudo source /etc/profile.d/maven.sh
-              sudo mvn clean package
-              sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryProd)
-              sudo nohup java -jar $(appDirectoryProd)java-helloworld-0.0.1-SNAPSHOT.jar &
+              /opt/apache-maven-3.9.6/bin/mvn clean package
+              sudo kill -15 $(ps -ef |grep nohup|grep 7070|awk '{print $2}')
+              cp -f $(Pipeline.Workspace)/s/target/$(jarFileName) $(appDirectoryProd)
+              sudo nohup java -jar $(appDirectoryProd)$(jarFileName) > $(appDirectoryDev)prod.log 2>&1 &
             displayName: "Deploy to Prod"
