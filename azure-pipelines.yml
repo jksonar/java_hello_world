@@ -24,9 +24,9 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Dev"
-              mvn clean package
+              sudo mvn clean package
               sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryDev)
-              java -jar $(appDirectoryDev)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=7070
+              sudo nohup java -jar $(appDirectoryDev)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=7070 &
             displayName: "Deploy to Dev"
 
       - job: DeployToUAT
@@ -36,9 +36,9 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to UAT"
-              mvn clean package
+              sudo mvn clean package
               sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryUat)
-              java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090
+              sudo nohup java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090 &
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
@@ -48,7 +48,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Prod"
-              mvn clean package
+              sudo mvn clean package
               sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryProd)
-              java -jar $(appDirectoryProd)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090
+              sudo nohup java -jar $(appDirectoryProd)java-helloworld-0.0.1-SNAPSHOT.jar &
             displayName: "Deploy to Prod"
