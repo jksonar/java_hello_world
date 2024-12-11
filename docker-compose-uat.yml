@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  Hello_world_app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: Hello-world-uat
+    container_name: Hello-world-uat
+    ports:
+      - 9090:8080

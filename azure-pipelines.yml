@@ -38,10 +38,9 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to UAT"
-              /opt/apache-maven-3.9.6/bin/mvn clean package
-              sudo kill -15 $(ps -ef |grep nohup|grep 9090|awk '{print $2}')
-              cp -f $(Pipeline.Workspace)/s/target/$(jarFileName) $(appDirectoryUat)
-              nohup java -jar $(appDirectoryUat)$(jarFileName) --server.port=9090 > $(appDirectoryDev)uat.log 2>&1 &
+              docker compose -f docker-compose-uat.yml build --no-cache
+              docker compose -f docker-compose-uat.yml down
+              docker compose -f docker-compose-uat.yml up -d
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
