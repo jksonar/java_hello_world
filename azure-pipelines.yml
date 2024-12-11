@@ -36,10 +36,9 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to UAT"
-              sudo source /etc/profile.d/maven.sh
-              sudo mvn clean package
-              sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryUat)
-              sudo nohup java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090 &
+              /opt/apache-maven-3.9.6/bin/mvn clean package
+              cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryUat)
+              nohup java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090 &
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
