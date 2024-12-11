@@ -24,6 +24,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Dev"
+              sudo source /etc/profile.d/maven.sh
               sudo mvn clean package
               sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryDev)
               sudo nohup java -jar $(appDirectoryDev)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=7070 &
@@ -36,6 +37,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to UAT"
+              sudo source /etc/profile.d/maven.sh
               sudo mvn clean package
               sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryUat)
               sudo nohup java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090 &
@@ -48,6 +50,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Prod"
+              sudo source /etc/profile.d/maven.sh
               sudo mvn clean package
               sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryProd)
               sudo nohup java -jar $(appDirectoryProd)java-helloworld-0.0.1-SNAPSHOT.jar &
