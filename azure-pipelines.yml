@@ -24,10 +24,9 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Dev"
-              sudo source /etc/profile.d/maven.sh
-              sudo mvn clean package
-              sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryDev)
-              sudo nohup java -jar $(appDirectoryDev)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=7070 &
+              mvn clean package
+              cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryDev)
+              nohup java -jar $(appDirectoryDev)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=7070 &
             displayName: "Deploy to Dev"
 
       - job: DeployToUAT
