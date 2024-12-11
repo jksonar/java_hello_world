@@ -1,0 +1,9 @@
+services:
+  Hello_world_app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: hello_world_uat
+    container_name: hello_world_uat
+    ports:
+      - 7070:8080

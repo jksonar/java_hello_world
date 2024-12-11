@@ -24,11 +24,10 @@ stages:
         steps:
           - checkout: self
           - script: |
-              echo "Deploying to Dev"
-              /opt/apache-maven-3.9.6/bin/mvn clean package
-              sudo kill -15 $(ps -ef |grep nohup|grep 7070|awk '{print $2}')
-              cp -f $(Pipeline.Workspace)/s/target/$(jarFileName) $(appDirectoryDev)
-              sudo nohup java -jar $(appDirectoryDev)$(jarFileName) --server.port=7070 > $(appDirectoryDev)dev.log 2>&1 &
+              echo "Deploying to Dev"              
+              sudo docker compose -f docker-compose-dev.yml build --no-cache
+              sudo docker compose -f docker-compose-dev.yml down
+              sudo docker compose -f docker-compose-dev.yml up -d
             displayName: "Deploy to Dev"
 
       - job: DeployToUAT
@@ -50,8 +49,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Prod"
-              /opt/apache-maven-3.9.6/bin/mvn clean package
-              sudo kill -15 $(ps -ef |grep nohup|grep 8080|awk '{print $2}')
-              cp -f $(Pipeline.Workspace)/s/target/$(jarFileName) $(appDirectoryProd)
-              sudo nohup java -jar $(appDirectoryProd)$(jarFileName) > $(appDirectoryDev)prod.log 2>&1 &
+              sudo docker compose -f docker-compose-prod.yml build --no-cache
+              sudo docker compose -f docker-compose-prod.yml down
+              sudo docker compose -f docker-compose-prod.yml up -d
             displayName: "Deploy to Prod"
