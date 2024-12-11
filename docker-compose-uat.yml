@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    image: Hello-world-uat
-    container_name: Hello-world-uat
+    image: Hello_world_uat
+    container_name: Hello_world_uat
     ports:
       - 9090:8080
