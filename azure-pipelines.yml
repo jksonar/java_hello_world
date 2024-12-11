@@ -38,9 +38,9 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to UAT"
-              docker compose -f docker-compose-uat.yml build --no-cache
-              docker compose -f docker-compose-uat.yml down
-              docker compose -f docker-compose-uat.yml up -d
+              sudo docker compose -f docker-compose-uat.yml build --no-cache
+              sudo docker compose -f docker-compose-uat.yml down
+              sudo docker compose -f docker-compose-uat.yml up -d
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
