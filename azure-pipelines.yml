@@ -1,19 +1,54 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
+  - master
+  - dev
+  - uat
 
 pool:
-  vmImage: ubuntu-latest
+  name: Default
+  demands:
+    - Agent.Name -equals vm-azuredevops
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  appDirectoryDev: "/var/java/dev/"
+  appDirectoryUat: "/var/java/uat/"
+  appDirectoryProd: "/var/java/prod/"
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+  - stage: Deploy
+    displayName: "Deploy Stage"
+    jobs:
+      - job: DeployToDev
+        displayName: "Deploy to Dev"
+        condition: eq(variables['Build.SourceBranchName'], 'dev')
+        steps:
+          - checkout: self
+          - script: |
+              echo "Deploying to Dev"
+              mvn clean package
+              sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryDev)
+              java -jar $(appDirectoryDev)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=7070
+            displayName: "Deploy to Dev"
+
+      - job: DeployToUAT
+        displayName: "Deploy to UAT"
+        condition: eq(variables['Build.SourceBranchName'], 'uat')
+        steps:
+          - checkout: self
+          - script: |
+              echo "Deploying to UAT"
+              mvn clean package
+              sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryUat)
+              java -jar $(appDirectoryUat)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090
+            displayName: "Deploy to UAT"
+
+      - job: DeployToProd
+        displayName: "Deploy to Prod"
+        condition: eq(variables['Build.SourceBranchName'], 'master')
+        steps:
+          - checkout: self
+          - script: |
+              echo "Deploying to Prod"
+              mvn clean package
+              sudo cp -f $(Pipeline.Workspace)/s/target/java-helloworld-0.0.1-SNAPSHOT.jar $(appDirectoryProd)
+              java -jar $(appDirectoryProd)java-helloworld-0.0.1-SNAPSHOT.jar --server.port=9090
+            displayName: "Deploy to Prod"
