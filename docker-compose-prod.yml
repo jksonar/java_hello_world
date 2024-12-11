@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    image: hello_world_uat
-    container_name: hello_world_uat
+    image: hello_world_prod
+    container_name: hello_world_prod
     ports:
       - 9090:8080
