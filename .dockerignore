@@ -1,0 +1,8 @@
+**/target
+target
+dockerfile
+docker-compose-*.yml
+azure-piplines.yml
+.dockerignore
+hosts
+playbook.yml

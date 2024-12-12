@@ -4,31 +4,19 @@
   gather_facts: false
   become_method: sudo
   become_user: root
-  vars:
-    - build_loc: "/var/java/{{ branch }}/"
   tasks:
-    - name: "REMOVE BUILD DIRECTORY FROM HOST"
-      file:
-        path: "{{ build_loc }}/"
-        state: absent
-
-    - name: "COPY FILES TO HOST"
-      copy:
-        src: "{{ work_space }}"
-        dest: "{{ build_loc }}"
-
     - name: "DOCKER COMPOSE BUILD IMAGES"
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml build --no-cache"
-        chdir: "{{ build_loc }}"
+        chdir: "{{ work_space }}"
 
     - name: "DOCKER COMPOSE STOP OLD CONTAINERS"
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml down"
-        chdir: "{{ build_loc }}"
+        chdir: "{{ work_space }}"
       ignore_errors: yes
 
     - name: "DOCKER COMPOSE START ALL CONTAINERS"
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml up -d"
-        chdir: "{{ build_loc }}"
+        chdir: "{{ work_space }}"
