@@ -32,3 +32,8 @@
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml up -d"
         chdir: "{{ build_loc }}"
+
+    - name: "DOCKER COPY ARTIFACTS"
+      command:
+        cmd: "docker cp hello_world_{{ branch }}:/app/java-helloworld-0.0.1-SNAPSHOT.jar {{ work_space }}"
+        chdir: "{{ build_loc }}"
