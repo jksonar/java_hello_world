@@ -29,9 +29,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to UAT"
-              sudo docker compose -f docker-compose-uat.yml build --no-cache
-              sudo docker compose -f docker-compose-uat.yml down
-              sudo docker compose -f docker-compose-uat.yml up -d
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ --limit local
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
