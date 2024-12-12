@@ -1,9 +1,0 @@
-services:
-  hello_world_app:
-    build:
-      context: .
-      dockerfile: dockerfile
-    image: hello_world_prod
-    container_name: hello_world_prod
-    ports:
-      - 8080:8080
