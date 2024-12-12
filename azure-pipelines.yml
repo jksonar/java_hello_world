@@ -19,7 +19,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Dev"              
-              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ --limit local
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ --limit local
             displayName: "Deploy to Dev"
 
       - job: DeployToUAT
