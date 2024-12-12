@@ -19,16 +19,16 @@
 
     - name: "DOCKER COMPOSE BUILD IMAGES"
       command:
-        cmd: docker-compose -f docker-compose-{{ branch }}.yml build --no-cache
+        cmd: "docker-compose -f docker-compose-{{ branch }}.yml build --no-cache"
         chdir: "{{ build_loc }}"
 
     - name: "DOCKER COMPOSE STOP OLD CONTAINERS"
       command:
-        cmd: docker-compose -f docker-compose-{{ branch }}.yml down
+        cmd: "docker-compose -f docker-compose-{{ branch }}.yml down"
         chdir: "{{ build_loc }}"
       ignore_errors: yes
 
     - name: "DOCKER COMPOSE START ALL CONTAINERS"
       command:
-        cmd: docker-compose -f docker-compose-{{ branch }}.yml up -d
+        cmd: "docker-compose -f docker-compose-{{ branch }}.yml up -d"
         chdir: "{{ build_loc }}"
