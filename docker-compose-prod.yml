@@ -1,5 +1,5 @@
 services:
-  Hello_world_app:
+  hello_world_app:
     build:
       context: .
       dockerfile: dockerfile
