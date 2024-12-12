@@ -8,12 +8,6 @@ pool:
   demands:
     - Agent.Name -equals vm-azuredevops
 
-variables:
-  appDirectoryDev: "/var/java/dev/"
-  appDirectoryUat: "/var/java/uat/"
-  appDirectoryProd: "/var/java/prod/"
-  jarFileName: "java-helloworld-0.0.1-SNAPSHOT.jar"
-
 stages:
   - stage: Deploy
     displayName: "Deploy Stage"
@@ -25,9 +19,7 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Dev"              
-              sudo docker compose -f docker-compose-dev.yml build --no-cache
-              sudo docker compose -f docker-compose-dev.yml down
-              sudo docker compose -f docker-compose-dev.yml up -d
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(variables['Build.SourceBranchName']) -e work_space=$(Pipeline.Workspace)/s/ --limit local
             displayName: "Deploy to Dev"
 
       - job: DeployToUAT
@@ -49,7 +41,5 @@ stages:
           - checkout: self
           - script: |
               echo "Deploying to Prod"
-              sudo docker compose -f docker-compose-prod.yml build --no-cache
-              sudo docker compose -f docker-compose-prod.yml down
-              sudo docker compose -f docker-compose-prod.yml up -d
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(variables['Build.SourceBranchName']) -e work_space=$(Pipeline.Workspace)/s/ --limit local
             displayName: "Deploy to Prod"
