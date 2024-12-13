@@ -4,19 +4,26 @@
   gather_facts: false
   become_method: sudo
   become_user: root
+  vars:
+    - build_loc: "/var/java/{{ branch }}/"
   tasks:
+    - name: "COPY FILES TO HOST"
+      synchronize:
+        src: "{{ work_space }}"
+        dest: "{{ build_loc }}"
+
     - name: "DOCKER COMPOSE BUILD IMAGES"
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml build --no-cache"
-        chdir: "{{ work_space }}"
+        chdir: "{{ build_loc }}"
 
     - name: "DOCKER COMPOSE STOP OLD CONTAINERS"
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml down"
-        chdir: "{{ work_space }}"
+        chdir: "{{ build_loc }}"
       ignore_errors: yes
 
     - name: "DOCKER COMPOSE START ALL CONTAINERS"
       command:
         cmd: "docker compose -f docker-compose-{{ branch }}.yml up -d"
-        chdir: "{{ work_space }}"
+        chdir: "{{ build_loc }}"
