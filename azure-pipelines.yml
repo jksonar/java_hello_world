@@ -8,9 +8,27 @@ pool:
   demands:
     - Agent.Name -equals vm-azuredevops
 
+variables:
+  major: 1
+  minor: 0
+  patch: $[counter(variables['Build.SourceBranchName'], 1)]  # Auto-increments per branch
+  releaseVersion: ''
+
 stages:
+  - stage: GenerateVersion
+    displayName: "Generate Release Version"
+    jobs:
+      - job: SetVersion
+        displayName: "Set Version"
+        steps:
+          - script: |
+              echo "##vso[task.setvariable variable=releaseVersion]$(major).$(minor).$(patch)-$(Build.SourceBranchName)-$(Build.BuildId)"
+              echo "Release Version: $(releaseVersion)"
+            displayName: "Generate and Set Release Version"
+
   - stage: Deploy
     displayName: "Deploy Stage"
+    dependsOn: GenerateVersion
     jobs:
       - job: DeployToDev
         displayName: "Deploy to Dev"
@@ -18,8 +36,8 @@ stages:
         steps:
           - checkout: self
           - script: |
-              echo "Deploying to Dev"              
-              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ --limit local
+              echo "Deploying to Dev - Version $(releaseVersion)"
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ -e release_version=$(releaseVersion) --limit local
             displayName: "Deploy to Dev"
 
       - job: DeployToUAT
@@ -28,8 +46,8 @@ stages:
         steps:
           - checkout: self
           - script: |
-              echo "Deploying to UAT"
-              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ --limit local
+              echo "Deploying to UAT - Version $(releaseVersion)"
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ -e release_version=$(releaseVersion) --limit local
             displayName: "Deploy to UAT"
 
       - job: DeployToProd
@@ -38,6 +56,6 @@ stages:
         steps:
           - checkout: self
           - script: |
-              echo "Deploying to Prod"
-              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ --limit local
+              echo "Deploying to Prod - Version $(releaseVersion)"
+              ansible-playbook $(Pipeline.Workspace)/s/playbook.yml -i $(Pipeline.Workspace)/s/hosts -e branch=$(Build.SourceBranchName) -e work_space=$(Pipeline.Workspace)/s/ -e release_version=$(releaseVersion) --limit local
             displayName: "Deploy to Prod"
