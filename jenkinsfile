@@ -51,12 +51,15 @@ pipeline {
 
                     if (Branch_Name == For_Dev_ENV) {
                         buildProfile = "develop"
+                        playbook = "/opt/jenkins/playbook/las/las_dev_tomcat.yml"
                         deployScript = "/opt/scripts/deploy_dev.sh"
                     } else if (Branch_Name == For_UAT_ENV) {
                         buildProfile = "uat"
+                        playbook = "/opt/jenkins/playbook/las/las_uat_tomcat.yml"
                         deployScript = "/opt/scripts/deploy_uat.sh"
                     } else if (Branch_Name == For_Prod_ENV) {
                         buildProfile = "prod"
+                        playbook = "/opt/jenkins/playbook/las/las_Prod_tomcat.yml"
                         deployScript = "/opt/scripts/deploy_prod.sh"
                     }
                     
@@ -67,7 +70,7 @@ pipeline {
                     // """
                     
                     ansiColor('css') {
-                        sh "${deployScript}" // -f las-parent/las-frontend/target/las-frontend.war"
+                        sh "${deployScript} ${buildProfile} ${playbook}"
                     }
                 }
             }
