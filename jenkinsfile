@@ -19,10 +19,10 @@ pipeline {
         disableResume()
         ansiColor('xterm')
     }
-    // triggers {
-    //     // GitHub or GitLab webhooks trigger automatically
-    //     githubPush()
-    // }
+    triggers {
+        // GitHub or GitLab webhooks trigger automatically
+        pollSCM('H/2 * * * *')
+    }
     stages {
         stage("Checkout Code") {
             when {
