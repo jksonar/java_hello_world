@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+    // tools {
+    //     maven "apache_maven_3.5.2"
+    //     jdk "zulu17"
+    //     git "Default"
+    // }
+    environment {
+        Branch_Name = "${env.BRANCH_NAME}"
+        For_Dev_ENV = "dev"
+        For_UAT_ENV = "uat"
+        For_Prod_ENV = "main"
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
+        timestamps()
+        skipDefaultCheckout()
+        disableResume()
+        ansiColor('xterm')
+    }
+    triggers {
+        // GitHub or GitLab webhooks trigger automatically
+        pollSCM('H/2 * * * *')
+    }
+    stages {
+        stage("Checkout Code") {
+            when {
+                expression { env.BRANCH_NAME in [For_Dev_ENV, For_UAT_ENV, For_Prod_ENV] }
+            }
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${Branch_Name}"]],
+                    userRemoteConfigs: [[
+                        // credentialsId: 'lasdev_github_functional_user',
+                        url: 'https://github.com/jksonar/java_hello_world.git'
+                    ]]
+                ])
+            }
+        }
+        
+        stage("Build and Deploy") {
+            when {
+                expression { env.BRANCH_NAME in [For_Dev_ENV, For_UAT_ENV, For_Prod_ENV] }
+            }
+            steps {
+                script {
+                    def buildProfile
+                    def deployScript
+
+                    if (Branch_Name == For_Dev_ENV) {
+                        buildProfile = "develop"
+                        deployScript = "/opt/scripts/deploy_dev.sh"
+                    } else if (Branch_Name == For_UAT_ENV) {
+                        buildProfile = "uat"
+                        deployScript = "/opt/scripts/deploy_uat.sh"
+                    } else if (Branch_Name == For_Prod_ENV) {
+                        buildProfile = "prod"
+                        deployScript = "/opt/scripts/deploy_prod.sh"
+                    }
+                    
+                    // sh """
+                    //     rm -f las-parent/las-frontend/target/las-frontend.war
+                    //     cd las-parent
+                    //     mvn clean install -DskipTests -P ${buildProfile}
+                    // """
+                    
+                    ansiColor('css') {
+                        sh "${deployScript}" // -f las-parent/las-frontend/target/las-frontend.war"
+                    }
+                }
+            }
+        }
+    }
+}
